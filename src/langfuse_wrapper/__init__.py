@@ -16,21 +16,32 @@ from __future__ import annotations
 
 from .client import configure, flush, get_client, get_settings, is_enabled, reset
 from .config import Settings
+from .cost import estimate_cost, get_model_price, register_model_price
+from .llm import extract_usage, track_llm
 from .tracing import generation, span, trace, trace_context
+from .types import CostResult, ModelPrice, Usage
 
 __version__ = "0.1.0"
 
 __all__ = [
     "__version__",
+    "CostResult",
+    "ModelPrice",
     "Settings",
+    "Usage",
     "configure",
+    "estimate_cost",
+    "extract_usage",
     "flush",
     "generation",
     "get_client",
+    "get_model_price",
     "get_settings",
     "is_enabled",
+    "register_model_price",
     "reset",
     "span",
+    "track_llm",
     "trace",
     "trace_context",
 ]
