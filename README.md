@@ -26,8 +26,8 @@ Early development. Built incrementally in phases:
 | Phase | Feature | Status |
 |-------|---------|--------|
 | 0 | Package scaffold + SDK confirmation | ✅ |
-| 1 | Config + client + graceful degradation | ⏳ |
-| 2 | Tracing decorators / context managers | ⏳ |
+| 1 | Config + client + graceful degradation | ✅ |
+| 2 | Tracing decorators / context managers | ✅ |
 | 3 | LLM usage + cost tracking | ⏳ |
 | 4 | Prompt management helpers | ⏳ |
 | 5 | Scoring / eval utilities | ⏳ |

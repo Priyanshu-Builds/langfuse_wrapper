@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from .client import configure, flush, get_client, get_settings, is_enabled, reset
 from .config import Settings
+from .tracing import generation, span, trace, trace_context
 
 __version__ = "0.1.0"
 
@@ -24,8 +25,12 @@ __all__ = [
     "Settings",
     "configure",
     "flush",
+    "generation",
     "get_client",
     "get_settings",
     "is_enabled",
     "reset",
+    "span",
+    "trace",
+    "trace_context",
 ]
