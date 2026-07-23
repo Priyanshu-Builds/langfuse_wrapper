@@ -12,8 +12,20 @@ The public API is populated incrementally across implementation phases; this mod
 re-exports the curated surface. See README.md for the roadmap.
 """
 
+from __future__ import annotations
+
+from .client import configure, flush, get_client, get_settings, is_enabled, reset
+from .config import Settings
+
 __version__ = "0.1.0"
 
-__all__: list[str] = [
+__all__ = [
     "__version__",
+    "Settings",
+    "configure",
+    "flush",
+    "get_client",
+    "get_settings",
+    "is_enabled",
+    "reset",
 ]
