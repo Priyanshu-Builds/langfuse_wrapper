@@ -29,7 +29,7 @@ Early development. Built incrementally in phases:
 | 1 | Config + client + graceful degradation | ✅ |
 | 2 | Tracing decorators / context managers | ✅ |
 | 3 | LLM usage + cost tracking | ✅ |
-| 4 | Prompt management helpers | ⏳ |
+| 4 | Prompt management helpers | ✅ |
 | 5 | Scoring / eval utilities | ⏳ |
 | 6 | PII scrubbing | ⏳ |
 | 7 | LangGraph / LangChain integration | ⏳ |
