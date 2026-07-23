@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langfuse-wrapper"
+version = "0.1.0"
+description = "Ergonomic, feature-additive Python wrapper around the Langfuse observability SDK."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Priyanshu" }]
+keywords = ["langfuse", "observability", "llm", "tracing", "opentelemetry"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "langfuse>=4,<5",
+    "pydantic-settings>=2",
+]
+
+[project.optional-dependencies]
+langchain = ["langchain-core"]
+dev = [
+    "pytest>=8",
+    "pytest-mock>=3",
+    "ruff>=0.6",
+    "mypy>=1.10",
+]
+
+[project.urls]
+Repository = "https://github.com/Priyanshu-Builds/langfuse_wrapper"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/langfuse_wrapper"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["langfuse_wrapper"]
+mypy_path = "src"
+ignore_missing_imports = true
