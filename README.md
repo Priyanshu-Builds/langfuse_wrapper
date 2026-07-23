@@ -31,7 +31,7 @@ Early development. Built incrementally in phases:
 | 3 | LLM usage + cost tracking | ✅ |
 | 4 | Prompt management helpers | ✅ |
 | 5 | Scoring / eval utilities | ✅ |
-| 6 | PII scrubbing | ⏳ |
+| 6 | PII scrubbing | ✅ |
 | 7 | LangGraph / LangChain integration | ⏳ |
 | 8 | Docs polish | ⏳ |
 

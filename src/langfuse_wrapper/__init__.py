@@ -20,6 +20,7 @@ from .cost import estimate_cost, get_model_price, register_model_price
 from .llm import extract_usage, track_llm
 from .prompts import LocalPrompt, get_prompt, render
 from .scoring import create_score, score
+from .scrubbing import register_pattern, scrub
 from .tracing import generation, span, trace, trace_context
 from .types import CostResult, ModelPrice, Usage
 
@@ -44,9 +45,11 @@ __all__ = [
     "get_settings",
     "is_enabled",
     "register_model_price",
+    "register_pattern",
     "render",
     "reset",
     "score",
+    "scrub",
     "span",
     "track_llm",
     "trace",

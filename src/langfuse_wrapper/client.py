@@ -17,6 +17,7 @@ from langfuse import Langfuse
 
 from ._noop import NoopClient
 from .config import Settings
+from .scrubbing import make_mask
 
 if TYPE_CHECKING:
     LangfuseClient = Langfuse | NoopClient
@@ -86,11 +87,14 @@ def get_client() -> LangfuseClient:
         return _client
 
     try:
-        _client = Langfuse(
-            public_key=settings.public_key,
-            secret_key=settings.secret_key,
-            base_url=settings.base_url,
-        )
+        client_kwargs: dict[str, Any] = {
+            "public_key": settings.public_key,
+            "secret_key": settings.secret_key,
+            "base_url": settings.base_url,
+        }
+        if settings.scrub_pii:
+            client_kwargs["mask"] = make_mask()
+        _client = Langfuse(**client_kwargs)
     except Exception:  # defensive: keep the host app alive on any init failure
         logger.warning(
             "langfuse_wrapper: failed to initialize Langfuse client — falling back to no-op.",
