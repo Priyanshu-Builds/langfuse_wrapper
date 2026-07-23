@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Proposal: adopt langfuse_wrapper as our shared observability layer between projects and Langfuse.">
 <title>langfuse_wrapper — proposal</title>
 <style>
   :root {
@@ -214,8 +215,19 @@
     .featlist { grid-template-columns: 1fr; }
   }
 </style>
+<style>
+  .theme-toggle{position:fixed;top:16px;right:16px;z-index:50;font-family:var(--font-mono);
+    font-size:12px;letter-spacing:.04em;color:var(--muted);background:var(--surface);
+    border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;
+    display:inline-flex;gap:7px;align-items:center;transition:color .15s ease;}
+  .theme-toggle:hover{color:var(--ink);}
+  .theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+  @media print{.theme-toggle{display:none;}}
+</style>
+<script>(function(){try{var t=localStorage.getItem('lfw-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme"><span aria-hidden="true">◑</span> theme</button>
 <section class="hero">
   <div class="wrap fx">
     <p class="eyebrow">Internal proposal &middot; Observability</p>
@@ -427,5 +439,21 @@ langfuse = get_client()
     &nbsp;·&nbsp; prepared by Priyanshu
   </div>
 </footer>
+<script>
+  (function () {
+    var btn = document.getElementById('themeToggle');
+    function current() {
+      var explicit = document.documentElement.getAttribute('data-theme');
+      if (explicit) return explicit;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark' : 'light';
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('lfw-theme', next); } catch (e) {}
+    });
+  })();
+</script>
 </body>
 </html>

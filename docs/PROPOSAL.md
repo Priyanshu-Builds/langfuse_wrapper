@@ -4,8 +4,9 @@
 reusable wrapper library that sits between our projects and Langfuse. Teams instrument with
 one-line helpers; when Langfuse changes, one library changes instead of every project.
 
-> A visual one-pager version of this proposal lives at [`docs/proposal.html`](proposal.html)
-> (open it in a browser).
+> A visual one-pager version of this proposal is hosted at
+> **[priyanshu-builds.github.io/langfuse_wrapper](https://priyanshu-builds.github.io/langfuse_wrapper/)**
+> (source: [`docs/index.html`](index.html)).
 
 ## Context
 
