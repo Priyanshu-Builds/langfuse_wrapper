@@ -17,6 +17,7 @@ from __future__ import annotations
 from .client import configure, flush, get_client, get_settings, is_enabled, reset
 from .config import Settings
 from .cost import estimate_cost, get_model_price, register_model_price
+from .integrations.langchain import get_handler
 from .llm import extract_usage, track_llm
 from .prompts import LocalPrompt, get_prompt, render
 from .scoring import create_score, score
@@ -40,6 +41,7 @@ __all__ = [
     "flush",
     "generation",
     "get_client",
+    "get_handler",
     "get_model_price",
     "get_prompt",
     "get_settings",

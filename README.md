@@ -32,7 +32,7 @@ Early development. Built incrementally in phases:
 | 4 | Prompt management helpers | ✅ |
 | 5 | Scoring / eval utilities | ✅ |
 | 6 | PII scrubbing | ✅ |
-| 7 | LangGraph / LangChain integration | ⏳ |
+| 7 | LangGraph / LangChain integration | ✅ |
 | 8 | Docs polish | ⏳ |
 
 ## Install (development)
