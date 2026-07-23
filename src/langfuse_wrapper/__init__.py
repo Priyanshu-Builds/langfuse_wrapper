@@ -19,6 +19,7 @@ from .config import Settings
 from .cost import estimate_cost, get_model_price, register_model_price
 from .llm import extract_usage, track_llm
 from .prompts import LocalPrompt, get_prompt, render
+from .scoring import create_score, score
 from .tracing import generation, span, trace, trace_context
 from .types import CostResult, ModelPrice, Usage
 
@@ -32,6 +33,7 @@ __all__ = [
     "Settings",
     "Usage",
     "configure",
+    "create_score",
     "estimate_cost",
     "extract_usage",
     "flush",
@@ -44,6 +46,7 @@ __all__ = [
     "register_model_price",
     "render",
     "reset",
+    "score",
     "span",
     "track_llm",
     "trace",
