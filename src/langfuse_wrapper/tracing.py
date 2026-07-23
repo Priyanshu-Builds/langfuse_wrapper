@@ -17,14 +17,23 @@ from __future__ import annotations
 
 import functools
 import inspect
-from collections.abc import Callable
-from contextlib import AbstractContextManager, nullcontext
+from collections.abc import Callable, Iterator
+from contextlib import AbstractContextManager, contextmanager, nullcontext
 from typing import Any, Literal, TypeVar
 
 from langfuse import observe as _observe
 from langfuse import propagate_attributes as _propagate_attributes
 
-from .client import get_client, is_enabled
+from .client import get_client, get_settings, is_enabled
+
+# langfuse resolves the client keyless for top-level observe/propagate_attributes, which returns a
+# *disabled* client when multiple Langfuse instances exist in the process (multi-client safety).
+# Binding our configured public_key makes that resolution pick our client. observe takes it as a
+# call-time kwarg; propagate_attributes has no key arg, so we set the same context var it reads.
+try:
+    from langfuse._client.get_client import _set_current_public_key
+except Exception:  # pragma: no cover - private API; degrade gracefully if it moves
+    _set_current_public_key = None  # type: ignore[assignment]
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -72,7 +81,9 @@ def trace(
                 if not is_enabled():
                     return await fn(*args, **kwargs)
                 get_client()  # ensure our client is registered for global resolution
-                return await observed(*args, **kwargs)
+                return await observed(
+                    *args, langfuse_public_key=get_settings().public_key, **kwargs
+                )
 
             return async_wrapper  # type: ignore[return-value]
 
@@ -81,7 +92,7 @@ def trace(
             if not is_enabled():
                 return fn(*args, **kwargs)
             get_client()
-            return observed(*args, **kwargs)
+            return observed(*args, langfuse_public_key=get_settings().public_key, **kwargs)
 
         return sync_wrapper  # type: ignore[return-value]
 
@@ -113,6 +124,7 @@ def generation(
     )
 
 
+@contextmanager
 def trace_context(
     *,
     user_id: str | None = None,
@@ -121,20 +133,29 @@ def trace_context(
     metadata: dict[str, Any] | None = None,
     version: str | None = None,
     name: str | None = None,
-) -> AbstractContextManager[Any]:
+) -> Iterator[None]:
     """Set trace-level attributes for every observation created within this scope.
 
-    Wraps Langfuse's ``propagate_attributes``. ``name`` maps to the trace name. Returns a null
-    context (does nothing) when the wrapper is inactive.
+    Wraps Langfuse's ``propagate_attributes`` (``name`` maps to the trace name), binding our
+    configured client so the attributes apply even when multiple Langfuse clients exist in the
+    process. Does nothing when the wrapper is inactive.
     """
     if not is_enabled():
-        return nullcontext()
+        yield
+        return
     get_client()  # ensure our client is registered for global resolution
-    return _propagate_attributes(
+    key = get_settings().public_key
+    key_ctx: AbstractContextManager[Any] = (
+        _set_current_public_key(key)
+        if _set_current_public_key is not None and key
+        else nullcontext()
+    )
+    with key_ctx, _propagate_attributes(
         user_id=user_id,
         session_id=session_id,
         tags=tags,
         metadata=metadata,
         version=version,
         trace_name=name,
-    )
+    ):
+        yield

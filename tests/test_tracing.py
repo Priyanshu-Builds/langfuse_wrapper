@@ -16,13 +16,18 @@ from langfuse_wrapper._noop import NoopSpan
 
 
 def _counting_observe(counter: dict[str, int]):
-    """A stand-in for langfuse.observe that counts wrapper invocations (not decoration)."""
+    """A stand-in for langfuse.observe that counts wrapper invocations (not decoration).
+
+    Mirrors the real observe by popping the ``langfuse_public_key`` call-time kwarg so it never
+    leaks to the wrapped function.
+    """
 
     def observe(**_kwargs: Any):
         def decorator(fn):
             @functools.wraps(fn)
             def wrapper(*args: Any, **kwargs: Any):
                 counter["calls"] += 1
+                counter["public_key"] = kwargs.pop("langfuse_public_key", None)
                 return fn(*args, **kwargs)
 
             return wrapper
@@ -59,6 +64,8 @@ def test_trace_uses_observe_when_enabled(monkeypatch: pytest.MonkeyPatch) -> Non
 
     assert mul(2, 4) == 8
     assert counter["calls"] == 1
+    # our configured key is forwarded so resolution binds our client (multi-client safety)
+    assert counter["public_key"] == "pk"
 
 
 def test_trace_bare_usage_without_parentheses() -> None:
@@ -153,11 +160,17 @@ def test_generation_forwards_model_and_generation_type(monkeypatch: pytest.Monke
 # --- trace_context() --------------------------------------------------------
 
 
-def test_trace_context_is_null_when_disabled() -> None:
-    cm = tracing.trace_context(user_id="u")
-    assert isinstance(cm, nullcontext)
-    with cm:
+def test_trace_context_is_noop_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
+    called = {"propagate": False}
+
+    def fake_propagate(**kwargs: Any):
+        called["propagate"] = True
+        return nullcontext()
+
+    monkeypatch.setattr(tracing, "_propagate_attributes", fake_propagate)
+    with tracing.trace_context(user_id="u"):
         pass  # no error
+    assert called["propagate"] is False  # never touches Langfuse when inactive
 
 
 def test_trace_context_calls_propagate_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -178,3 +191,24 @@ def test_trace_context_calls_propagate_when_enabled(monkeypatch: pytest.MonkeyPa
     assert captured["session_id"] == "s1"
     assert captured["tags"] == ["t"]
     assert captured["trace_name"] == "flow"  # name maps to trace_name
+
+
+def test_trace_context_binds_configured_public_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from langfuse._client.get_client import _current_public_key
+
+    seen: dict[str, Any] = {}
+
+    def fake_propagate(**kwargs: Any):
+        seen["key_inside"] = _current_public_key.get(None)
+        return nullcontext()
+
+    monkeypatch.setattr(tracing, "_propagate_attributes", fake_propagate)
+    monkeypatch.setattr(client_mod, "Langfuse", lambda **kwargs: object())
+    lw.configure(public_key="pk-project-a", secret_key="sk")
+
+    with tracing.trace_context(user_id="u1"):
+        pass
+
+    # our key is bound so keyless resolution inside the scope picks our client
+    assert seen["key_inside"] == "pk-project-a"
+    assert _current_public_key.get(None) is None  # restored after the scope
