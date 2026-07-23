@@ -19,6 +19,9 @@ is down", cost tracking, prompt versioning, scoring, and PII redaction.
 - **Feature-additive helpers** — LLM cost tracking, prompt helpers, scoring utilities,
   and optional PII scrubbing on top of Langfuse.
 
+> **Why a wrapper instead of using Langfuse directly?** See the rationale in
+> [`docs/PROPOSAL.md`](docs/PROPOSAL.md) (or the visual one-pager, `docs/proposal.html`).
+
 ## Install
 
 ```bash
