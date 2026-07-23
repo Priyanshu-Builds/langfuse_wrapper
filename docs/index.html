@@ -302,12 +302,12 @@ langfuse = get_client()
 <span class="a">def</span> run_agent(query):
     <span class="a">with</span> langfuse.start_as_current_observation(
         name=<span class="s">"llm-call"</span>, as_type=<span class="s">"generation"</span>,
-        model=<span class="s">"claude-opus-4-8"</span>,
+        model=<span class="s">"gpt-5.5"</span>,
     ) <span class="a">as</span> gen:
-        resp = client.messages.create(...)
+        resp = client.chat.completions.create(...)
         gen.update(usage_details={
-            <span class="s">"input"</span>: resp.usage.input_tokens,
-            <span class="s">"output"</span>: resp.usage.output_tokens,
+            <span class="s">"input"</span>: resp.usage.prompt_tokens,
+            <span class="s">"output"</span>: resp.usage.completion_tokens,
         })
         <span class="c"># cost? PII? by hand, again, here</span>
     langfuse.score_current_trace(name=<span class="s">"relevance"</span>, value=0.9)
@@ -327,10 +327,10 @@ langfuse = get_client()
 <span class="a">@lw.trace</span>(name=<span class="s">"research_agent"</span>)
 <span class="a">def</span> run_agent(query):
     <span class="a">with</span> lw.generation(<span class="s">"llm-call"</span>,
-                       model=<span class="s">"claude-opus-4-8"</span>) <span class="a">as</span> gen:
-        resp = client.messages.create(...)
+                       model=<span class="s">"gpt-5.5"</span>) <span class="a">as</span> gen:
+        resp = client.chat.completions.create(...)
         lw.track_llm(gen, resp,
-                     model=<span class="s">"claude-opus-4-8"</span>)  <span class="c"># usage + cost</span>
+                     model=<span class="s">"gpt-5.5"</span>)  <span class="c"># usage + cost</span>
     lw.score(<span class="s">"relevance"</span>, 0.9)
 
 <span class="a">with</span> lw.trace_context(session_id=<span class="s">"s1"</span>,

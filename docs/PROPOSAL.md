@@ -51,12 +51,12 @@ langfuse = get_client()
 @observe(name="research_agent", as_type="span")
 def run_agent(query):
     with langfuse.start_as_current_observation(
-        name="llm-call", as_type="generation", model="claude-opus-4-8",
+        name="llm-call", as_type="generation", model="gpt-5.5",
     ) as gen:
-        resp = client.messages.create(...)
+        resp = client.chat.completions.create(...)
         gen.update(usage_details={
-            "input": resp.usage.input_tokens,
-            "output": resp.usage.output_tokens,
+            "input": resp.usage.prompt_tokens,
+            "output": resp.usage.completion_tokens,
         })
         # cost? PII? by hand, again, here
     langfuse.score_current_trace(name="relevance", value=0.9)
@@ -75,9 +75,9 @@ import langfuse_wrapper as lw
 
 @lw.trace(name="research_agent")
 def run_agent(query):
-    with lw.generation("llm-call", model="claude-opus-4-8") as gen:
-        resp = client.messages.create(...)
-        lw.track_llm(gen, resp, model="claude-opus-4-8")   # usage + cost
+    with lw.generation("llm-call", model="gpt-5.5") as gen:
+        resp = client.chat.completions.create(...)
+        lw.track_llm(gen, resp, model="gpt-5.5")   # usage + cost
     lw.score("relevance", 0.9)
 
 with lw.trace_context(session_id="s1", user_id="u1", tags=["prod"]):
